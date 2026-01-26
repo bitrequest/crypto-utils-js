@@ -404,8 +404,8 @@ This library is intended for:
 
 ## Related Projects
 
-- [bip39-utils-js](./bip39-utils-js.md) - BIP39/BIP32 HD wallet utilities
-- [xmr-utils-js](./xmr-utils-js.md) - Monero cryptographic utilities
+- [bip39-utils-js](https://github.com/bitrequest/bip39-utils-js) - BIP39/BIP32 HD wallet utilities
+- [xmr-utils-js](https://github.com/bitrequest/xmr-utils-js) - Monero cryptographic utilities
 - [bitrequest](https://github.com/bitrequest/bitrequest.github.io) - Cryptocurrency point-of-sale PWA
 
 ---
