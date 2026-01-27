@@ -14,6 +14,7 @@ Pure JavaScript cryptocurrency utilities library. Low-level building blocks for 
 - **WIF** - Wallet Import Format for private keys
 - **AES Encryption** - Encrypt/decrypt with password
 - **Hex/Byte Utilities** - Comprehensive conversion functions
+- **Built-in Compatibility Testing** - Verify browser/environment support
 
 ## Live Demo
 
@@ -260,6 +261,72 @@ const decrypted = CryptoUtils.aes_dec(encrypted, "password123");
 
 ---
 
+## Compatibility Testing
+
+The library includes built-in test functions to verify browser/environment compatibility before use.
+
+### Quick Compatibility Check
+
+```javascript
+// Check if all core features work
+if (CryptoUtils.test_crypto_api() && CryptoUtils.test_bigint() && CryptoUtils.test_secp256k1()) {
+	console.log("Environment compatible!");
+}
+```
+
+### Individual Test Functions
+
+```javascript
+// Test crypto.getRandomValues availability
+CryptoUtils.test_crypto_api();  // returns true/false
+
+// Test BigInt support
+CryptoUtils.test_bigint();  // returns true/false
+
+// Test secp256k1 key derivation
+CryptoUtils.test_secp256k1();  // returns true/false
+
+// Test Bech32 address encoding
+CryptoUtils.test_bech32();  // returns true/false
+
+// Test Bitcoin Cash CashAddr encoding
+CryptoUtils.test_cashaddr();  // returns true/false
+
+// Test Keccak256 / Ethereum address derivation
+CryptoUtils.test_keccak256();  // returns true/false
+
+// Test AES encryption round-trip
+CryptoUtils.test_aes();  // returns true/false
+```
+
+### Test Constants
+
+The library exposes test vectors for verification. The bech32/eth/cashaddr vectors are derived from the standard [BIP39 test phrase](https://github.com/trezor/python-mnemonic/blob/master/vectors.json): `army van defense carry jealous true garbage claim echo media make crunch`
+
+```javascript
+const TC = CryptoUtils.crypto_utils_const;
+
+TC.version              // "1.1.0"
+
+// secp256k1 test (private key 1 = generator point G)
+TC.test_privkey         // "0000...0001"
+TC.test_pubkey          // "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+
+// Bech32 test vectors (from test phrase, m/84'/0'/0'/0/0)
+TC.test_pubkey_bech32   // public key for bech32 test
+TC.test_address_bech32  // "bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5"
+
+// Ethereum test vectors (from test phrase, m/44'/60'/0'/0/0)
+TC.test_pubkey_eth      // public key for Ethereum test
+TC.test_address_eth     // "0x2161DedC3Be05B7Bb5aa16154BcbD254E9e9eb68"
+
+// CashAddr test vectors
+TC.test_legacy_address  // legacy Bitcoin address
+TC.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
+```
+
+---
+
 ## API Reference
 
 ### Key Operations
@@ -355,6 +422,25 @@ const decrypted = CryptoUtils.aes_dec(encrypted, "password123");
 | `aes_enc` | `data, password` | `string` | AES encrypt |
 | `aes_dec` | `data, password` | `string` | AES decrypt |
 
+### Testing Functions
+
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `test_crypto_api` | - | `boolean` | Test crypto.getRandomValues availability |
+| `test_bigint` | - | `boolean` | Test BigInt functionality |
+| `test_secp256k1` | - | `boolean` | Test secp256k1 key derivation |
+| `test_bech32` | - | `boolean` | Test Bech32 address encoding |
+| `test_cashaddr` | - | `boolean` | Test Bitcoin Cash CashAddr encoding |
+| `test_keccak256` | - | `boolean` | Test Keccak256 / Ethereum address |
+| `test_aes` | - | `boolean` | Test AES encryption round-trip |
+
+### Constants
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `crypto_utils_const` | `object` | Test vectors and version info |
+| `CURVE` | `object` | secp256k1 curve parameters (P, N, Gx, Gy) |
+
 ---
 
 ## Supported Currencies
@@ -374,13 +460,25 @@ const decrypted = CryptoUtils.aes_dec(encrypted, "password123");
 
 The test suite (`unit_tests_crypto_utils.html`) includes:
 
-### Automated Tests (35+ tests)
+### Automated Tests (50+ tests)
+
+**Built-in Library Tests**
+- `CryptoUtils.test_crypto_api` - Crypto API availability
+- `CryptoUtils.test_bigint` - BigInt support
+- `CryptoUtils.test_secp256k1` - Key derivation
+- `CryptoUtils.test_bech32` - Bech32 encoding
+- `CryptoUtils.test_cashaddr` - CashAddr encoding
+- `CryptoUtils.test_keccak256` - Ethereum address derivation
+- `CryptoUtils.test_aes` - AES encryption
+
+**Unit Tests**
 - Key generation and derivation
 - Address generation for all formats
 - Base58/Base58Check encoding
 - Bech32 encoding
 - Hashing functions
 - Hex conversion utilities
+- Test vector validation
 
 ### Interactive Tools
 1. **Key Generation** - Generate keypairs from private key
@@ -419,7 +517,7 @@ This library is intended for:
 
 ## License
 
-MIT License
+AGPL-3.0 License
 
 ## Credits
 
