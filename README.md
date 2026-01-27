@@ -61,7 +61,7 @@ Then open `unit_tests_crypto_utils.html` in your browser.
 
 ```javascript
 // Private key (32 bytes hex)
-const privateKey = "b2a0d576b828b537688b561f2cfa8dac3602d54c62bde619ad5331e6c235ee26";
+const privateKey = "922c2cc579600419c8cde59ca8fcb03518ddbb5c38ed1bfbd150cb100e1f5430";
 
 // Derive compressed public key (33 bytes)
 const publicKey = CryptoUtils.get_publickey(privateKey);
@@ -85,7 +85,7 @@ const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7
 
 // Native SegWit address (bc1q...)
 const segwitAddress = CryptoUtils.pub_to_address_bech32("bc", publicKey);
-// "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
+// "bc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0vhhywl"
 ```
 
 ### Generate Litecoin Addresses
@@ -95,27 +95,25 @@ const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7
 
 // Litecoin Legacy (L...)
 const ltcLegacy = CryptoUtils.pub_to_address("30", publicKey);
+// "Lbd17oRd3zduzbbfJDLn2oTQyA84G8Mtmw"
 
 // Litecoin SegWit (ltc1q...)
 const ltcSegwit = CryptoUtils.pub_to_address_bech32("ltc", publicKey);
+// "ltc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0gtdqk0"
 ```
 
 ### Generate Ethereum Address
 
 ```javascript
 // Start with compressed public key
-const compressedPub = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const compressedPub = "03c026c4b041059c84a187252682b6f80cbbe64eb81497111ab6914b050a8936fd";
 
 // Expand to uncompressed (65 bytes, starts with 04)
 const uncompressedPub = CryptoUtils.expand_pub(compressedPub);
 
 // Generate Ethereum address
 const ethAddress = CryptoUtils.pub_to_eth_address(uncompressedPub);
-// "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
-
-// With EIP-55 checksum
-const checksumAddress = CryptoUtils.to_checksum_address(ethAddress);
-// "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf"
+// "0x2161DedC3Be05B7Bb5aa16154BcbD254E9e9eb68"
 ```
 
 ### Generate Bitcoin Cash Address
@@ -128,20 +126,21 @@ const legacyAddress = CryptoUtils.pub_to_address("00", publicKey);
 
 // Convert to CashAddr format
 const cashAddr = CryptoUtils.pub_to_cashaddr(legacyAddress);
-// "bitcoincash:qp..."
+// "bitcoincash:qzeaman75678yrxjqgqs0lz246ql2x9sfupluc8lgg"
 ```
 
 ### Private Key to WIF
 
 ```javascript
-const privateKey = "b2a0d576b828b537688b561f2cfa8dac3602d54c62bde619ad5331e6c235ee26";
+const privateKey = "922c2cc579600419c8cde59ca8fcb03518ddbb5c38ed1bfbd150cb100e1f5430";
 
 // Bitcoin mainnet WIF (compressed)
 const wif = CryptoUtils.privkey_wif("80", privateKey, true);
-// "L3BxhCBNNLihRFeZVfmFMCnV4KPL4zNAro6Rhmx7PxUuRQphef1g"
+// "L27rKoVgW4dYc1BxhD1X7jp9ixPGwnn3E2eggznmpYcuktDYPKaH"
 
 // Litecoin mainnet WIF
 const ltcWif = CryptoUtils.privkey_wif("b0", privateKey, true);
+// "T7x7mYnruSc9NqpqEqxPL6MXfp2b1snw3EYwYoRKPWo5GmmddZsh"
 ```
 
 ---
@@ -152,11 +151,13 @@ const ltcWif = CryptoUtils.privkey_wif("b0", privateKey, true);
 
 ```javascript
 // Encode with checksum (used for addresses, WIF)
+const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const hash160 = CryptoUtils.hash160(publicKey);
 const encoded = CryptoUtils.b58check_encode("00" + hash160);
-// "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+// "1HQ3rb7nyLPrjnuW85MUknPekwkn7poAUm"
 
 // Decode (validates checksum, throws on invalid)
-const decoded = CryptoUtils.b58check_decode("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa");
+const decoded = CryptoUtils.b58check_decode("1HQ3rb7nyLPrjnuW85MUknPekwkn7poAUm");
 // Returns hex payload without checksum
 ```
 
@@ -171,16 +172,22 @@ const decoded = CryptoUtils.b58dec(base58String);
 ```
 
 ### Bech32 (SegWit)
-
 ```javascript
 // Decode SegWit address
-const decoded = CryptoUtils.bech32_decode("bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu");
+const decoded = CryptoUtils.bech32_decode("bc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0vhhywl");
 // { hrp: "bc", data: [0, 192, 158, ...] }
 
-// Encode Bech32
-const words = CryptoUtils.to_words(dataBytes);
+// Roundtrip: decode and re-encode
+const encoded = CryptoUtils.bech32_encode(decoded.hrp, decoded.data);
+// "bc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0vhhywl"
+
+// Encode from hash160 (20 bytes)
+const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const hash160 = CryptoUtils.hash160(publicKey);
+const hash160Bytes = CryptoUtils.hex_to_bytes(hash160);
+const words = CryptoUtils.to_words(hash160Bytes);
 words.unshift(0); // witness version 0
-const encoded = CryptoUtils.bech32_encode("bc", words);
+const address = CryptoUtils.bech32_encode("bc", words);
 ```
 
 ---
