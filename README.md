@@ -301,7 +301,7 @@ CryptoUtils.test_aes();  // returns true/false
 
 ### Test Constants
 
-The library exposes test vectors for verification. The bech32/eth/cashaddr vectors are derived from the standard [BIP39 test phrase](https://github.com/trezor/python-mnemonic/blob/master/vectors.json): `army van defense carry jealous true garbage claim echo media make crunch`
+The library exposes test vectors for verification. The bech32/eth/cashaddr vectors are derived from the standard [BIP39 test phrase](https://github.com/bitcoinbook/bitcoinbook/blob/f8b883dcd4e3d1b9adf40fed59b7e898fbd9241f/ch05.asciidoc): `army van defense carry jealous true garbage claim echo media make crunch`
 
 ```javascript
 const TC = CryptoUtils.crypto_utils_const;
