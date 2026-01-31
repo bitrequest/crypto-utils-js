@@ -1,13 +1,13 @@
 # Crypto Utils JS
 
-Pure JavaScript cryptocurrency utilities library. Low-level building blocks for Bitcoin, Ethereum, Litecoin, and other cryptocurrencies. Extracted from [bitrequest](https://github.com/bitrequest/bitrequest.github.io) for reuse in other projects.
+Pure JavaScript cryptocurrency utilities library. Low-level building blocks for Bitcoin, Ethereum, Litecoin, Kaspa, and other cryptocurrencies. Extracted from [bitrequest](https://github.com/bitrequest/bitrequest.github.io) for reuse in other projects.
 
 *No Node.js, no WebAssembly, just vanilla JavaScript.*
 
 ## Features
 
 - **secp256k1 Elliptic Curve** - Private/public key operations
-- **Address Generation** - Legacy (P2PKH), SegWit (Bech32), Ethereum, Bitcoin Cash (CashAddr)
+- **Address Generation** - Legacy (P2PKH), SegWit (Bech32), Ethereum, Bitcoin Cash (CashAddr), Kaspa
 - **Base58/Base58Check** - Encoding and decoding with checksum validation
 - **Bech32** - Native SegWit address encoding/decoding
 - **Hashing** - SHA256, RIPEMD160, Hash160, Keccak256, HMAC
@@ -130,6 +130,20 @@ const cashAddr = CryptoUtils.pub_to_cashaddr(legacyAddress);
 // "bitcoincash:qzeaman75678yrxjqgqs0lz246ql2x9sfupluc8lgg"
 ```
 
+### Generate Kaspa Address
+
+Kaspa uses a custom bech32 variant with 8-character (40-bit) checksum instead of the standard 6-character checksum.
+
+```javascript
+const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+
+// Generate Kaspa address (kaspa:q...)
+const kaspaAddress = CryptoUtils.pub_to_kaspa_address(publicKey);
+// "kaspa:qzn54t6vpasykvudztupcpwn2gelxf8y9p73uu5jcs3dg8s4yzmcgnu7jhj5l"
+```
+
+The function automatically extracts the x-only public key (32 bytes) from the compressed key, as Kaspa uses Schnorr-style addressing.
+
 ### Private Key to WIF
 
 ```javascript
@@ -190,6 +204,32 @@ const words = CryptoUtils.to_words(hash160Bytes);
 words.unshift(0); // witness version 0
 const address = CryptoUtils.bech32_encode("bc", words);
 ```
+
+### Kaspa Bech32 (40-bit Checksum)
+
+Kaspa uses a modified bech32 encoding with key differences from Bitcoin's implementation:
+
+```javascript
+// Generate Kaspa address directly from public key
+const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const kaspaAddress = CryptoUtils.pub_to_kaspa_address(publicKey);
+// "kaspa:qzn54t6vpasykvudztupcpwn2gelxf8y9p73uu5jcs3dg8s4yzmcgnu7jhj5l"
+
+// Low-level Kaspa bech32 functions
+const data = [0, 1, 2, 3]; // 5-bit words
+const checksum = CryptoUtils.kaspa_create_checksum("kaspa", data);
+// Returns 8 values (40-bit checksum)
+
+// Polymod calculation for Kaspa's 40-bit checksum
+const polymod = CryptoUtils.kaspa_polymod([1, 2, 3]);
+```
+
+| Feature | Bitcoin Bech32 | Kaspa Bech32 |
+|---------|----------------|--------------|
+| Checksum length | 6 chars (30-bit) | 8 chars (40-bit) |
+| HRP expansion | High + low 5 bits | Low 5 bits only |
+| Generator polynomial | 0x3b6a57b2 | Split 40-bit |
+| Address prefix | bc1q... | kaspa:q... |
 
 ---
 
@@ -297,6 +337,9 @@ CryptoUtils.test_keccak256();  // returns true/false
 
 // Test AES encryption round-trip
 CryptoUtils.test_aes();  // returns true/false
+
+// Test Kaspa address encoding (40-bit bech32)
+CryptoUtils.test_kaspa();  // returns true/false
 ```
 
 ### Test Constants
@@ -304,25 +347,29 @@ CryptoUtils.test_aes();  // returns true/false
 The library exposes test vectors for verification. The bech32/eth/cashaddr vectors are derived from the standard [BIP39 test phrase](https://github.com/bitcoinbook/bitcoinbook/blob/f8b883dcd4e3d1b9adf40fed59b7e898fbd9241f/ch05.asciidoc): `army van defense carry jealous true garbage claim echo media make crunch`
 
 ```javascript
-const TC = CryptoUtils.crypto_utils_const;
+const TestVector = CryptoUtils.crypto_utils_const;
 
-TC.version              // "1.1.0"
+TestVector.version              // "1.1.0"
 
 // secp256k1 test (private key 1 = generator point G)
-TC.test_privkey         // "0000...0001"
-TC.test_pubkey          // "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+TestVector.test_privkey         // "0000...0001"
+TestVector.test_pubkey          // "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
 
 // Bech32 test vectors (from test phrase, m/84'/0'/0'/0/0)
-TC.test_pubkey_bech32   // public key for bech32 test
-TC.test_address_bech32  // "bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5"
+TestVector.test_pubkey_bech32   // public key for bech32 test
+TestVector.test_address_bech32  // "bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5"
 
 // Ethereum test vectors (from test phrase, m/44'/60'/0'/0/0)
-TC.test_pubkey_eth      // public key for Ethereum test
-TC.test_address_eth     // "0x2161DedC3Be05B7Bb5aa16154BcbD254E9e9eb68"
+TestVector.test_pubkey_eth      // public key for Ethereum test
+TestVector.test_address_eth     // "0x2161DedC3Be05B7Bb5aa16154BcbD254E9e9eb68"
 
 // CashAddr test vectors
-TC.test_legacy_address  // legacy Bitcoin address
-TC.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
+TestVector.test_legacy_address  // legacy Bitcoin address
+TestVector.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
+
+// Kaspa test vectors (from test phrase, m/44'/111111'/0'/0/0)
+TestVector.test_pubkey_kaspa    // public key for Kaspa test
+TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esqmxzpn8m85qxvf4wnk6pdl2j"
 ```
 
 ---
@@ -349,6 +396,7 @@ TC.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 | `pub_to_eth_address` | `uncompressedPub` | `string` | Ethereum address (0x...) |
 | `to_checksum_address` | `address` | `string` | EIP-55 checksum format |
 | `pub_to_cashaddr` | `legacyAddress` | `string` | Bitcoin Cash CashAddr |
+| `pub_to_kaspa_address` | `pubkey` | `string` | Kaspa address (kaspa:q...) |
 
 ### Address Version Bytes
 
@@ -385,6 +433,9 @@ TC.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 | `bech32_decode` | `string` | `{hrp, data}` | Bech32 decode |
 | `to_words` | `bytes` | `array` | Convert bytes to 5-bit words |
 | `from_words` | `words` | `array` | Convert 5-bit words to bytes |
+| `kaspa_polymod` | `values` | `BigInt` | Kaspa 40-bit polymod calculation |
+| `kaspa_create_checksum` | `hrp, data` | `array` | Kaspa 8-char checksum |
+| `pub_to_kaspa_address` | `pubkey` | `string` | Public key to Kaspa address |
 
 ### Hashing Functions
 
@@ -433,6 +484,7 @@ TC.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 | `test_cashaddr` | - | `boolean` | Test Bitcoin Cash CashAddr encoding |
 | `test_keccak256` | - | `boolean` | Test Keccak256 / Ethereum address |
 | `test_aes` | - | `boolean` | Test AES encryption round-trip |
+| `test_kaspa` | - | `boolean` | Test Kaspa address encoding |
 
 ### Constants
 
@@ -453,6 +505,7 @@ TC.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 | Bitcoin Cash | CashAddr (bitcoincash:q...) | Full support |
 | Dogecoin | Legacy (D...) | Full support |
 | Dash | Legacy (X...) | Full support |
+| Kaspa | kaspa:q... (40-bit bech32) | Full support |
 
 ---
 
@@ -460,7 +513,7 @@ TC.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 
 The test suite (`unit_tests_crypto_utils.html`) includes:
 
-### Automated Tests (50+ tests)
+### Automated Tests (60+ tests)
 
 **Built-in Library Tests**
 - `CryptoUtils.test_crypto_api` - Crypto API availability
@@ -470,23 +523,25 @@ The test suite (`unit_tests_crypto_utils.html`) includes:
 - `CryptoUtils.test_cashaddr` - CashAddr encoding
 - `CryptoUtils.test_keccak256` - Ethereum address derivation
 - `CryptoUtils.test_aes` - AES encryption
+- `CryptoUtils.test_kaspa` - Kaspa address encoding
 
 **Unit Tests**
 - Key generation and derivation
-- Address generation for all formats
+- Address generation for all formats (including Kaspa 40-bit bech32)
 - Base58/Base58Check encoding
-- Bech32 encoding
+- Bech32 encoding (standard and Kaspa variant)
 - Hashing functions
 - Hex conversion utilities
 - Test vector validation
 
 ### Interactive Tools
 1. **Key Generation** - Generate keypairs from private key
-2. **Address Generation** - Create addresses for different currencies
+2. **Address Generation** - Create addresses for different currencies (including Kaspa)
 3. **Base58 Encode/Decode** - Test Base58Check operations
 4. **Bech32 Encode/Decode** - Test SegWit address operations
 5. **Hash Functions** - Test SHA256, Hash160, Keccak256
 6. **AES Encryption** - Test encrypt/decrypt
+7. **Kaspa Address** - Generate Kaspa addresses from public key
 
 ---
 
