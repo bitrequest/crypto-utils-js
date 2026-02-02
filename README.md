@@ -1,16 +1,17 @@
 # Crypto Utils JS
 
-Pure JavaScript cryptocurrency utilities library. Low-level building blocks for Bitcoin, Ethereum, Litecoin, Kaspa, and other cryptocurrencies. Extracted from [bitrequest](https://github.com/bitrequest/bitrequest.github.io) for reuse in other projects.
+Pure JavaScript cryptocurrency utilities library. Low-level building blocks for Bitcoin, Ethereum, Litecoin, Kaspa, Nimiq, Nano, and other cryptocurrencies. Extracted from [bitrequest](https://github.com/bitrequest/bitrequest.github.io) for reuse in other projects.
 
 *No Node.js, no WebAssembly, just vanilla JavaScript.*
 
 ## Features
 
 - **secp256k1 Elliptic Curve** - Private/public key operations
-- **Address Generation** - Legacy (P2PKH), SegWit (Bech32), Ethereum, Bitcoin Cash (CashAddr), Kaspa
+- **Ed25519 Elliptic Curve** - Edwards curve key derivation (Nimiq, Nano, Monero)
+- **Address Generation** - Legacy (P2PKH), SegWit (Bech32), Ethereum, Bitcoin Cash (CashAddr), Kaspa, Nimiq, Nano
 - **Base58/Base58Check** - Encoding and decoding with checksum validation
 - **Bech32** - Native SegWit address encoding/decoding
-- **Hashing** - SHA256, RIPEMD160, Hash160, Keccak256, HMAC
+- **Hashing** - SHA256, RIPEMD160, Hash160, Keccak256, Blake2b, HMAC
 - **WIF** - Wallet Import Format for private keys
 - **AES Encryption** - Encrypt/decrypt with password
 - **Hex/Byte Utilities** - Comprehensive conversion functions
@@ -144,6 +145,38 @@ const kaspaAddress = CryptoUtils.pub_to_kaspa_address(publicKey);
 
 The function automatically extracts the x-only public key (32 bytes) from the compressed key, as Kaspa uses Schnorr-style addressing.
 
+### Generate Nimiq Address
+
+Nimiq uses Ed25519 with SHA-512 for public key derivation, Blake2b-256 hashing, and a custom Base32 encoding with IBAN-style checksum.
+
+```javascript
+// Ed25519 private key (32 bytes hex)
+const privateKey = "9eac269fb28cbeab3c7cd77b60daa4590e1316b6e9a71e5e58dfeaa40d9ebc15";
+
+// Derive Ed25519 public key (SHA-512 variant)
+const publicKey = CryptoUtils.ed25519_pubkey(privateKey);
+
+// Generate Nimiq address (NQ...)
+const nimiqAddress = CryptoUtils.to_nimiq_address(publicKey);
+// "NQ288KG7ER5QUANFN5X1J1CJFRN6FE8GC1KM"
+```
+
+### Generate Nano Address
+
+Nano uses a Blake2b-512 variant of Ed25519 for key derivation, with a custom Base32 encoding and Blake2b-5 checksum.
+
+```javascript
+// Ed25519 private key (32 bytes hex)
+const privateKey = "9eac269fb28cbeab3c7cd77b60daa4590e1316b6e9a71e5e58dfeaa40d9ebc15";
+
+// Derive Ed25519 public key (Blake2b-512 variant, different from standard SHA-512)
+const publicKey = CryptoUtils.nano_ed25519_pubkey(privateKey);
+
+// Generate Nano address (nano_...)
+const nanoAddress = CryptoUtils.to_nano_address(publicKey);
+// "nano_1mbtirc4x3kixfy5wufxaqakd3gbojpn6gpmk6kjiyngnjwgy6yty3txgztq"
+```
+
 ### Private Key to WIF
 
 ```javascript
@@ -265,6 +298,19 @@ const hmac = CryptoUtils.hmac_bits(data, key, "hex");
 // Returns 128-char hex (64 bytes)
 ```
 
+### Blake2b
+
+```javascript
+// Blake2b with configurable output length (used by Nimiq, Nano)
+const hash = CryptoUtils.blake2b(inputHex, outputLengthBytes);
+
+// Blake2b-256 (32 bytes) — used for Nimiq address hashing
+const hash256 = CryptoUtils.blake2b(data, 32);
+
+// Nimiq-specific: Blake2b-256 of raw bytes
+const nimiqHash = CryptoUtils.nimiq_hash(rawHex);
+```
+
 ---
 
 ## Hex/Byte Conversion
@@ -369,7 +415,13 @@ TestVector.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 
 // Kaspa test vectors (from test phrase, m/44'/111111'/0'/0/0)
 TestVector.test_pubkey_kaspa    // public key for Kaspa test
-TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esqmxzpn8m85qxvf4wnk6pdl2j"
+TestVector.test_address_kaspa   // "kaspa:qpd7m89g20e989s8ue5gqkwkv9k94nvxe562exrey7lrcjmzqegn2wspgcke4"
+
+// Nimiq test vectors (from test phrase, SLIP-0010 m/44'/242'/0'/0')
+TestVector.test_address_nimiq   // "NQ288KG7ER5QUANFN5X1J1CJFRN6FE8GC1KM"
+
+// Nano test vectors (from test phrase, SLIP-0010 m/44'/165'/0')
+TestVector.test_address_nano    // "nano_1mbtirc4x3kixfy5wufxaqakd3gbojpn6gpmk6kjiyngnjwgy6yty3txgztq"
 ```
 
 ---
@@ -386,6 +438,15 @@ TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esq
 | `privkey_wif` | `version, key, compressed` | `string` | Private key to WIF format |
 | `normalize_privatekey` | `key` | `string` | Normalize private key format |
 
+### Ed25519 Key Operations
+
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `ed25519_pubkey` | `privateKey` | `string` | Ed25519 public key via SHA-512 (Nimiq) |
+| `nano_ed25519_pubkey` | `privateKey` | `string` | Ed25519 public key via Blake2b-512 (Nano) |
+| `ed25519_point_multiply` | `hex` | `EdPoint` | Scalar × basepoint multiplication |
+| `ed_bytes_to_number_le` | `Uint8Array` | `BigInt` | Little-endian bytes to BigInt |
+
 ### Address Generation
 
 | Function | Parameters | Returns | Description |
@@ -397,6 +458,9 @@ TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esq
 | `to_checksum_address` | `address` | `string` | EIP-55 checksum format |
 | `pub_to_cashaddr` | `legacyAddress` | `string` | Bitcoin Cash CashAddr |
 | `pub_to_kaspa_address` | `pubkey` | `string` | Kaspa address (kaspa:q...) |
+| `to_nimiq_address` | `rawHex` | `string` | Nimiq address (NQ...) from public key |
+| `to_nano_address` | `pubkey` | `string` | Nano address (nano_...) from public key |
+| `nano_to_raw` | `amount` | `string` | Convert NANO to raw units |
 
 ### Address Version Bytes
 
@@ -445,6 +509,8 @@ TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esq
 | `hmac_bits` | `data, key, format` | `string` | HMAC with bit array |
 | `hash160` | `data` | `string` | SHA256 + RIPEMD160 |
 | `keccak256` | `data` | `string` | Keccak-256 (Ethereum) |
+| `blake2b` | `data, outLen` | `string` | Blake2b hash (configurable length) |
+| `nimiq_hash` | `rawHex` | `string` | Blake2b-256 hash (Nimiq) |
 | `sha_sub` | `data, algo` | `string` | Generic SHA hash |
 
 ### Hex/Byte Conversion
@@ -492,6 +558,8 @@ TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esq
 |----------|------|-------------|
 | `crypto_utils_const` | `object` | Test vectors and version info |
 | `CURVE` | `object` | secp256k1 curve parameters (P, N, Gx, Gy) |
+| `ED25519` | `object` | Ed25519 curve parameters (P, n, a, d, Gx, Gy) |
+| `EdPoint` | `class` | Ed25519 affine point (fromHex, add, multiply, toHex) |
 
 ---
 
@@ -506,6 +574,8 @@ TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esq
 | Dogecoin | Legacy (D...) | Full support |
 | Dash | Legacy (X...) | Full support |
 | Kaspa | kaspa:q... (40-bit bech32) | Full support |
+| Nimiq | NQ... (IBAN-style checksum) | Ed25519 + Blake2b |
+| Nano | nano_... (custom base32) | Ed25519-Blake2b variant |
 
 ---
 
@@ -513,7 +583,7 @@ TestVector.test_address_kaspa   // "kaspa:qpuy2rlwjl4l7kxf5klvnehdmvhdjqvr8c8esq
 
 The test suite (`unit_tests_crypto_utils.html`) includes:
 
-### Automated Tests (60+ tests)
+### Automated Tests (140+ tests)
 
 **Built-in Library Tests**
 - `CryptoUtils.test_crypto_api` - Crypto API availability
@@ -526,22 +596,33 @@ The test suite (`unit_tests_crypto_utils.html`) includes:
 - `CryptoUtils.test_kaspa` - Kaspa address encoding
 
 **Unit Tests**
-- Key generation and derivation
-- Address generation for all formats (including Kaspa 40-bit bech32)
+- Key generation and derivation (secp256k1 + Ed25519)
+- Address generation for all formats (including Kaspa 40-bit bech32, Nimiq, Nano)
+- Ed25519 curve operations and public key derivation
+- Blake2b hashing (Nimiq, Nano)
 - Base58/Base58Check encoding
 - Bech32 encoding (standard and Kaspa variant)
-- Hashing functions
+- Hashing functions (SHA256, Hash160, Keccak256, Blake2b)
 - Hex conversion utilities
 - Test vector validation
 
 ### Interactive Tools
-1. **Key Generation** - Generate keypairs from private key
+1. **Key Generation** - Generate keypairs from private key (secp256k1 + Ed25519)
 2. **Address Generation** - Create addresses for different currencies (including Kaspa)
-3. **Base58 Encode/Decode** - Test Base58Check operations
-4. **Bech32 Encode/Decode** - Test SegWit address operations
-5. **Hash Functions** - Test SHA256, Hash160, Keccak256
-6. **AES Encryption** - Test encrypt/decrypt
+3. **Nimiq Address** - Private key to Nimiq address (Ed25519 + Blake2b)
+4. **Nano Address** - Private key to Nano address (Ed25519-Blake2b)
+5. **Blake2b Hash** - Test Blake2b hashing with configurable output length
+6. **NANO → RAW** - Convert NANO amounts to raw units
 7. **Kaspa Address** - Generate Kaspa addresses from public key
+8. **Base58 Encode/Decode** - Test Base58Check operations
+9. **Bech32 Encode/Decode** - Test SegWit address operations
+10. **Hash Functions** - Test SHA256, Hash160, Keccak256
+11. **AES Encryption** - Test encrypt/decrypt
+12. **WIF Conversion** - Private key to Wallet Import Format
+13. **LNURL Decode** - Lightning Network URL decoding
+14. **Address → Script Hash** - Electrum format conversion
+15. **String Utilities** - BIP39 helper functions
+16. **Modular Arithmetic** - secp256k1 curve operations
 
 ---
 
