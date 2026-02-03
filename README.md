@@ -83,25 +83,31 @@ const address = CryptoUtils.pub_to_address("00", publicKey);
 ### Generate Bitcoin SegWit Address (Bech32)
 
 ```javascript
-const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const publicKey = "03bb4a626f63436a64d7cf1e441713cc964c0d53289a5b17acb1b9c262be57cb17";
 
 // Native SegWit address (bc1q...)
 const segwitAddress = CryptoUtils.pub_to_address_bech32("bc", publicKey);
-// "bc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0vhhywl"
+// "bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5"
 ```
 
-### Generate Litecoin Addresses
+### Generate Litecoin Legacy Addresses
 
 ```javascript
-const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const publicKey = "030f87ed19655507e317f14422c1a19aabbe3c273ccd202a69088194b68203b2ba";
 
 // Litecoin Legacy (L...)
 const ltcLegacy = CryptoUtils.pub_to_address("30", publicKey);
-// "Lbd17oRd3zduzbbfJDLn2oTQyA84G8Mtmw"
+// "LZakyXotaE29Pehw21SoPuU832UhvJp4LG"
+```
+
+### Generate Litecoin SegWit Address (Bech32)
+
+```javascript
+const publicKey = "03c9530e9ffae0a2674353c6037ddc0bc0171edd2a43de68120abff5794d99a86e";
 
 // Litecoin SegWit (ltc1q...)
 const ltcSegwit = CryptoUtils.pub_to_address_bech32("ltc", publicKey);
-// "ltc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0gtdqk0"
+// "ltc1qc64rhsxzmnre94nw4spn6866gqhmcpp05suu3c"
 ```
 
 ### Generate Ethereum Address
@@ -121,14 +127,14 @@ const ethAddress = CryptoUtils.pub_to_eth_address(uncompressedPub);
 ### Generate Bitcoin Cash Address
 
 ```javascript
-const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const publicKey = "038ed8bae10e841dfc9bb2f59a2de9c553f27d8299819409572a4d641ffe39c31a";
 
 // First get legacy address
 const legacyAddress = CryptoUtils.pub_to_address("00", publicKey);
 
 // Convert to CashAddr format
 const cashAddr = CryptoUtils.pub_to_cashaddr(legacyAddress);
-// "bitcoincash:qzeaman75678yrxjqgqs0lz246ql2x9sfupluc8lgg"
+// "bitcoincash:qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 ```
 
 ### Generate Kaspa Address
@@ -136,11 +142,11 @@ const cashAddr = CryptoUtils.pub_to_cashaddr(legacyAddress);
 Kaspa uses a custom bech32 variant with 8-character (40-bit) checksum instead of the standard 6-character checksum.
 
 ```javascript
-const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const publicKey = "035bed9ca853f2539607e6688059d6616c5acd86cd34ac987927be3c4b62065135";
 
 // Generate Kaspa address (kaspa:q...)
 const kaspaAddress = CryptoUtils.pub_to_kaspa_address(publicKey);
-// "kaspa:qzn54t6vpasykvudztupcpwn2gelxf8y9p73uu5jcs3dg8s4yzmcgnu7jhj5l"
+// "kaspa:qpd7m89g20e989s8ue5gqkwkv9k94nvxe562exrey7lrcjmzqegn2wspgcke4"
 ```
 
 The function automatically extracts the x-only public key (32 bytes) from the compressed key, as Kaspa uses Schnorr-style addressing.
@@ -151,7 +157,7 @@ Nimiq uses Ed25519 with SHA-512 for public key derivation, Blake2b-256 hashing, 
 
 ```javascript
 // Ed25519 private key (32 bytes hex)
-const privateKey = "9eac269fb28cbeab3c7cd77b60daa4590e1316b6e9a71e5e58dfeaa40d9ebc15";
+const privateKey = "0429b5b4f7fe799640501c366fba99da00d6c8e28cc5178a1bd2d185b93266f3";
 
 // Derive Ed25519 public key (SHA-512 variant)
 const publicKey = CryptoUtils.ed25519_pubkey(privateKey);
@@ -167,7 +173,7 @@ Nano uses a Blake2b-512 variant of Ed25519 for key derivation, with a custom Bas
 
 ```javascript
 // Ed25519 private key (32 bytes hex)
-const privateKey = "9eac269fb28cbeab3c7cd77b60daa4590e1316b6e9a71e5e58dfeaa40d9ebc15";
+const privateKey = "746710a8c311aa08344d9de45258179a8a2d041b76c0c6c9788dc05b8c566892";
 
 // Derive Ed25519 public key (Blake2b-512 variant, different from standard SHA-512)
 const publicKey = CryptoUtils.nano_ed25519_pubkey(privateKey);
@@ -222,12 +228,12 @@ const decoded = CryptoUtils.b58dec(base58String);
 ### Bech32 (SegWit)
 ```javascript
 // Decode SegWit address
-const decoded = CryptoUtils.bech32_decode("bc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0vhhywl");
+const decoded = CryptoUtils.bech32_decode("bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5");
 // { hrp: "bc", data: [0, 192, 158, ...] }
 
 // Roundtrip: decode and re-encode
 const encoded = CryptoUtils.bech32_encode(decoded.hrp, decoded.data);
-// "bc1qk0wlvl4xh3eqe5szqyrlcj4ws8633vz0vhhywl"
+// "bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5"
 
 // Encode from hash160 (20 bytes)
 const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
@@ -244,9 +250,9 @@ Kaspa uses a modified bech32 encoding with key differences from Bitcoin's implem
 
 ```javascript
 // Generate Kaspa address directly from public key
-const publicKey = "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7";
+const publicKey = "035bed9ca853f2539607e6688059d6616c5acd86cd34ac987927be3c4b62065135";
 const kaspaAddress = CryptoUtils.pub_to_kaspa_address(publicKey);
-// "kaspa:qzn54t6vpasykvudztupcpwn2gelxf8y9p73uu5jcs3dg8s4yzmcgnu7jhj5l"
+// "kaspa:qpd7m89g20e989s8ue5gqkwkv9k94nvxe562exrey7lrcjmzqegn2wspgcke4"
 
 // Low-level Kaspa bech32 functions
 const data = [0, 1, 2, 3]; // 5-bit words
@@ -398,23 +404,23 @@ const TestVector = CryptoUtils.crypto_utils_const;
 TestVector.version              // "1.1.0"
 
 // secp256k1 test (private key 1 = generator point G)
-TestVector.test_privkey         // "0000...0001"
-TestVector.test_pubkey          // "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+TestVector.test_privkey         // "922c2cc579600419c8cde59ca8fcb03518ddbb5c38ed1bfbd150cb100e1f5430"
+TestVector.test_pubkey          // "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7"
 
 // Bech32 test vectors (from test phrase, m/84'/0'/0'/0/0)
-TestVector.test_pubkey_bech32   // public key for bech32 test
+TestVector.test_pubkey_bech32   // "03bb4a626f63436a64d7cf1e441713cc964c0d53289a5b17acb1b9c262be57cb17"
 TestVector.test_address_bech32  // "bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5"
 
 // Ethereum test vectors (from test phrase, m/44'/60'/0'/0/0)
-TestVector.test_pubkey_eth      // public key for Ethereum test
+TestVector.test_pubkey_eth      // "0x03c026c4b041059c84a187252682b6f80cbbe64eb81497111ab6914b050a8936fd"
 TestVector.test_address_eth     // "0x2161DedC3Be05B7Bb5aa16154BcbD254E9e9eb68"
 
 // CashAddr test vectors
-TestVector.test_legacy_address  // legacy Bitcoin address
-TestVector.test_address_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
+TestVector.test_bch_legacy_address  // "1AVPurYZinnctgGPiXziwU6PuyZKX5rYZU"
+TestVector.test_bch_cashaddr // "qp5p0eur784pk8wxy2kzlz3ctnq5whfnuqqpp78u22"
 
 // Kaspa test vectors (from test phrase, m/44'/111111'/0'/0/0)
-TestVector.test_pubkey_kaspa    // public key for Kaspa test
+TestVector.test_pubkey_kaspa    // "035bed9ca853f2539607e6688059d6616c5acd86cd34ac987927be3c4b62065135"
 TestVector.test_address_kaspa   // "kaspa:qpd7m89g20e989s8ue5gqkwkv9k94nvxe562exrey7lrcjmzqegn2wspgcke4"
 
 // Nimiq test vectors (from test phrase, SLIP-0010 m/44'/242'/0'/0')
