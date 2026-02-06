@@ -312,9 +312,6 @@ const hash = CryptoUtils.blake2b(inputHex, outputLengthBytes);
 
 // Blake2b-256 (32 bytes) — used for Nimiq address hashing
 const hash256 = CryptoUtils.blake2b(data, 32);
-
-// Nimiq-specific: Blake2b-256 of raw bytes
-const nimiqHash = CryptoUtils.nimiq_hash(rawHex);
 ```
 
 ---
@@ -516,7 +513,7 @@ TestVector.test_address_nano    // "nano_1mbtirc4x3kixfy5wufxaqakd3gbojpn6gpmk6k
 | `hash160` | `data` | `string` | SHA256 + RIPEMD160 |
 | `keccak256` | `data` | `string` | Keccak-256 (Ethereum) |
 | `blake2b` | `data, outLen` | `string` | Blake2b hash (configurable length) |
-| `nimiq_hash` | `rawHex` | `string` | Blake2b-256 hash (Nimiq) |
+| `rawHex` | `string` | Blake2b-256 hash (Nimiq) |
 | `sha_sub` | `data, algo` | `string` | Generic SHA hash |
 
 ### Hex/Byte Conversion
