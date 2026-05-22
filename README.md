@@ -19,7 +19,7 @@ Pure JavaScript cryptocurrency utilities library. Low-level building blocks for 
 
 ## Live Demo
 
-**[🔐 Crypto Utils Test Suite](https://bitrequest.github.io/unit_tests_crypto_utils.html)** - Interactive tests and tools
+**[🔐 Crypto Utils Test Suite](https://bitrequest.github.io/unit_tests/crypto_utils.html)** - Interactive tests and tools
 
 ---
 
@@ -29,9 +29,9 @@ Pure JavaScript cryptocurrency utilities library. Low-level building blocks for 
 
 ```bash
 mkdir crypto_utils && cd crypto_utils && \
-curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/unit_tests_crypto_utils.html && \
-curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets_js_lib_crypto_utils.js && \
-curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets_js_lib_sjcl.js
+curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/unit_tests/crypto_utils.html && \
+curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/crypto_utils.js && \
+curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/sjcl.js
 ```
 
 Then open `unit_tests_crypto_utils.html` in your browser.
@@ -40,9 +40,9 @@ Then open `unit_tests_crypto_utils.html` in your browser.
 
 | File | Description |
 |------|-------------|
-| [assets_js_lib_sjcl.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets_js_lib_sjcl.js) | Stanford JavaScript Crypto Library |
-| [assets_js_lib_crypto_utils.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets_js_lib_crypto_utils.js) | Crypto utilities |
-| [unit_tests_crypto_utils.html](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/unit_tests_crypto_utils.html) | Interactive test suite |
+| [assets_js_lib_sjcl.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/sjcl.js) | Stanford JavaScript Crypto Library |
+| [assets_js_lib_crypto_utils.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/crypto_utils.js) | Crypto utilities |
+| [unit_tests_crypto_utils.html](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/unit_tests/crypto_utils.html) | Interactive test suite |
 
 ---
 
