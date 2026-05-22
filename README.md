@@ -40,9 +40,9 @@ Then open `unit_tests_crypto_utils.html` in your browser.
 
 | File | Description |
 |------|-------------|
-| [assets_js_lib_sjcl.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/sjcl.js) | Stanford JavaScript Crypto Library |
-| [assets_js_lib_crypto_utils.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/crypto_utils.js) | Crypto utilities |
-| [unit_tests_crypto_utils.html](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/unit_tests/crypto_utils.html) | Interactive test suite |
+| [sjcl.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/sjcl.js) | Stanford JavaScript Crypto Library |
+| [crypto_utils.js](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/crypto_utils.js) | Crypto utilities |
+| [crypto_utils.html](https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/unit_tests/crypto_utils.html) | Interactive test suite |
 
 ---
 
@@ -51,8 +51,8 @@ Then open `unit_tests_crypto_utils.html` in your browser.
 ### HTML Setup
 
 ```html
-<script src="assets_js_lib_sjcl.js"></script>
-<script src="assets_js_lib_crypto_utils.js"></script>
+<script src="crypto_utils/sjcl.js"></script>
+<script src="crypto_utils/crypto_utils.js"></script>
 ```
 
 ---
