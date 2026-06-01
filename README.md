@@ -34,7 +34,7 @@ curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master
 curl -O https://raw.githubusercontent.com/bitrequest/bitrequest.github.io/master/assets/js/lib/sjcl.js
 ```
 
-Then open `unit_tests_crypto_utils.html` in your browser.
+Then open `crypto_utils.html` in your browser.
 
 ### Manual Download
 
@@ -400,7 +400,7 @@ const TestVector = CryptoUtils.crypto_utils_const;
 
 TestVector.version              // "1.1.0"
 
-// secp256k1 test (private key 1 = generator point G)
+// secp256k1 test vectors (derived from the test phrase)
 TestVector.test_privkey         // "922c2cc579600419c8cde59ca8fcb03518ddbb5c38ed1bfbd150cb100e1f5430"
 TestVector.test_pubkey          // "036740c4f55d64fb6c9bc412084638b80062cee07f6c84b205671584e82a7c96b7"
 
@@ -409,7 +409,7 @@ TestVector.test_pubkey_bech32   // "03bb4a626f63436a64d7cf1e441713cc964c0d53289a
 TestVector.test_address_bech32  // "bc1qg0azlj4w2lrq8jssrrz6eprt2fe7f7edm4vpd5"
 
 // Ethereum test vectors (from test phrase, m/44'/60'/0'/0/0)
-TestVector.test_pubkey_eth      // "0x03c026c4b041059c84a187252682b6f80cbbe64eb81497111ab6914b050a8936fd"
+TestVector.test_pubkey_eth      // "03c026c4b041059c84a187252682b6f80cbbe64eb81497111ab6914b050a8936fd"
 TestVector.test_address_eth     // "0x2161DedC3Be05B7Bb5aa16154BcbD254E9e9eb68"
 
 // CashAddr test vectors
@@ -513,7 +513,6 @@ TestVector.test_address_nano    // "nano_1mbtirc4x3kixfy5wufxaqakd3gbojpn6gpmk6k
 | `hash160` | `data` | `string` | SHA256 + RIPEMD160 |
 | `keccak256` | `data` | `string` | Keccak-256 (Ethereum) |
 | `blake2b` | `data, outLen` | `string` | Blake2b hash (configurable length) |
-| `rawHex` | `string` | Blake2b-256 hash (Nimiq) |
 | `sha_sub` | `data, algo` | `string` | Generic SHA hash |
 
 ### Hex/Byte Conversion
@@ -584,7 +583,7 @@ TestVector.test_address_nano    // "nano_1mbtirc4x3kixfy5wufxaqakd3gbojpn6gpmk6k
 
 ## Interactive Test Suite
 
-The test suite (`unit_tests_crypto_utils.html`) includes:
+The test suite (`crypto_utils.html`) includes:
 
 ### Automated Tests (140+ tests)
 
