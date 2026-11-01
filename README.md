@@ -11,7 +11,7 @@ Pure JavaScript cryptocurrency utilities library. Low-level building blocks for 
 - **Address Generation** - Legacy (P2PKH), SegWit (Bech32), Ethereum, Bitcoin Cash (CashAddr), Kaspa, Nimiq, Nano
 - **Base58/Base58Check** - Encoding and decoding with checksum validation
 - **Bech32** - Native SegWit address encoding/decoding
-- **Hashing** - SHA256, RIPEMD160, Hash160, Keccak256, Blake2b, HMAC
+- **Hashing** - SHA256, RIPEMD160, Hash160, Keccak256, Blake2b, HMAC, MD5
 - **WIF** - Wallet Import Format for private keys
 - **AES Encryption** - Encrypt/decrypt with password
 - **Hex/Byte Utilities** - Comprehensive conversion functions
@@ -293,7 +293,7 @@ const hash160 = CryptoUtils.hash160(publicKey);
 
 ```javascript
 // Used for Ethereum addresses and signing
-const keccak = CryptoUtils.keccak256(data);
+const keccak = CryptoUtils.keccak_256(bytes);
 ```
 
 ### HMAC-SHA512
@@ -313,6 +313,16 @@ const hash = CryptoUtils.blake2b(inputHex, outputLengthBytes);
 // Blake2b-256 (32 bytes) — used for Nimiq address hashing
 const hash256 = CryptoUtils.blake2b(data, 32);
 ```
+
+### MD5
+
+```javascript
+// UTF-8 string input, matches PHP md5()
+const hash = CryptoUtils.md5("hello");
+// "5d41402abc4b2a76b9719d911017c592"
+```
+
+Not for security purposes. Use it for checksums, cache keys and verifying data against server-side `md5()` fingerprints.
 
 ---
 
@@ -511,9 +521,10 @@ TestVector.test_address_nano    // "nano_1mbtirc4x3kixfy5wufxaqakd3gbojpn6gpmk6k
 | `hmacsha` | `data, algo` | `string` | SHA256/SHA512 hash |
 | `hmac_bits` | `data, key, format` | `string` | HMAC with bit array |
 | `hash160` | `data` | `string` | SHA256 + RIPEMD160 |
-| `keccak256` | `data` | `string` | Keccak-256 (Ethereum) |
+| `keccak_256` | `bytes` | `string` | Keccak-256 (Ethereum) |
 | `blake2b` | `data, outLen` | `string` | Blake2b hash (configurable length) |
-| `sha_sub` | `data, algo` | `string` | Generic SHA hash |
+| `sha_sub` | `data, length` | `string` | SHA256 hex truncated to `length` chars |
+| `md5` | `string` | `string` | MD5 hex digest of UTF-8 input (matches PHP md5()) |
 
 ### Hex/Byte Conversion
 
@@ -604,7 +615,7 @@ The test suite (`crypto_utils.html`) includes:
 - Blake2b hashing (Nimiq, Nano)
 - Base58/Base58Check encoding
 - Bech32 encoding (standard and Kaspa variant)
-- Hashing functions (SHA256, Hash160, Keccak256, Blake2b)
+- Hashing functions (SHA256, Hash160, Keccak256, Blake2b, MD5)
 - Hex conversion utilities
 - Test vector validation
 
@@ -618,7 +629,7 @@ The test suite (`crypto_utils.html`) includes:
 7. **Kaspa Address** - Generate Kaspa addresses from public key
 8. **Base58 Encode/Decode** - Test Base58Check operations
 9. **Bech32 Encode/Decode** - Test SegWit address operations
-10. **Hash Functions** - Test SHA256, Hash160, Keccak256
+10. **Hash Functions** - Test SHA256, Hash160, Keccak256, MD5
 11. **AES Encryption** - Test encrypt/decrypt
 12. **WIF Conversion** - Private key to Wallet Import Format
 13. **LNURL Decode** - Lightning Network URL decoding
